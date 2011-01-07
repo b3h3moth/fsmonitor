@@ -1,0 +1,9 @@
+Required:
+   libinotifytools0-dev (ubuntu package)
+   libinotifytools0 (ubuntu package)
+
+Build:
+   make
+ 
+Usage:
+   ./fsmonitor /monitor/path /monitor/path2
