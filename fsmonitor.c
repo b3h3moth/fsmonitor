@@ -17,6 +17,7 @@ static void cleanup(int sig) {
 int main(int argc, char *argv[]) {
    int i;
    struct inotify_event *event;
+	char filename[MAX_FILE_NAME];
 	int events_to_watch = 0;
 
    // We can accept any number of paths to monitor
@@ -48,6 +49,15 @@ int main(int argc, char *argv[]) {
 
    // Read all of the events and send any files being written to
    while(!halt_processing && (event = inotifytools_next_event(-1))) {
+		if((event->mask & IN_CREATE) && (event->mask & IN_ISDIR)) {
+			inotifytools_snprintf(filename, MAX_FILE_NAME - 1, event, "%w%f");
+			printf("Adding new directory %s to watch list\n", filename);
+
+      	if(!inotifytools_watch_recursively(filename, events_to_watch)) {
+         	fprintf(stderr, "An error occurred while trying to monitor %s: %s\n", filename, strerror(inotifytools_error()));
+      	}
+
+		}
 		inotifytools_printf(event, "%w%f - %e\n");
    }
 
